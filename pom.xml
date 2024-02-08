@@ -65,6 +65,11 @@
 			<artifactId>spring-security-oauth2-autoconfigure</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>com.devsuperior</groupId>
+			<artifactId>bds03</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>

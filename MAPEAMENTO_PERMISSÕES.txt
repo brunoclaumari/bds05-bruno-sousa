@@ -1,0 +1,10 @@
+tipos: MEMBER, VISITOR
+
+
+**URLS
+
+/movies - GET [MEMBER, VISITOR]	| POST, PUT, DELETE, PATCH [MEMBER]
+/users - [MEMBER, VISITOR] para todos métodos
+/reviews GET [MEMBER, VISITOR]	| POST, PUT, DELETE, PATCH [MEMBER]
+/roles 	- apenas MEMBER para todos métodos
+/genres - apenas MEMBER para todos métodos
