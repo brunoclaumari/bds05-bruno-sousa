@@ -21,8 +21,6 @@ public class UserDTO implements Serializable{
 	
 	private String email;
 	
-	@JsonIgnore
-	private String password;
 
 	@JsonIgnore
 	Set<ReviewDTO> reviews = new HashSet<>();		
@@ -36,18 +34,16 @@ public class UserDTO implements Serializable{
 		
 	}
 
-	public UserDTO(Long id, String name, String email, String password) {		
+	public UserDTO(Long id, String name, String email) {		
 		this.id = id;
 		this.name = name;
-		this.email = email;
-		this.password = password;
+		this.email = email;		
 	}
 	
 	public UserDTO(User user) {		
 		this.id = user.getId();
 		this.name = user.getName();
-		this.email = user.getEmail();
-		this.password = user.getPassword();
+		this.email = user.getEmail();		
 		user.getRoles().forEach(role->this.roles.add(new RoleDTO(role)));
 	}
 
@@ -73,14 +69,6 @@ public class UserDTO implements Serializable{
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
 	}
 
 	public Set<ReviewDTO> getReviews() {

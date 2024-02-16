@@ -35,7 +35,7 @@ public class Movie implements Serializable{
 	//@Column(columnDefinition = "TEXT")
 	private String imgUrl;
 	
-	//@Column(columnDefinition = "TEXT")
+	@Column(columnDefinition = "TEXT")
 	private String synopsis;
 	
 	/*

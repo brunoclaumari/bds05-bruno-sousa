@@ -9,7 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.ResponseEntity.BodyBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,9 +22,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.devsuperior.movieflix.controller.exceptions.FieldMessage;
 import com.devsuperior.movieflix.dto.UserDTO;
 import com.devsuperior.movieflix.dto.UserInsertDTO;
+import com.devsuperior.movieflix.dto.UserUpdateDTO;
 import com.devsuperior.movieflix.services.UserService;
 
 @RestController
@@ -55,8 +56,7 @@ public class UserController {
 		dtoReturn = service.getLoggedUser();
 		if(dtoReturn != null) {
 			return ResponseEntity.ok().body(dtoReturn);
-		}
-		
+		}		
 		
 		return ResponseEntity.notFound().build();
 	}
@@ -77,8 +77,11 @@ public class UserController {
 	}
 
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<UserDTO> update(@PathVariable Long id,@Valid @RequestBody UserDTO dto) {
+	public ResponseEntity<UserDTO> update(@PathVariable Long id,@Valid @RequestBody UserUpdateDTO dto) {
 		UserDTO newDto = service.update(id, dto);
+		if(newDto.errorList != null && newDto.errorList.size() > 0) {
+			return ResponseEntity.unprocessableEntity().body(newDto);
+		}
 
 		return ResponseEntity.ok().body(newDto);
 	}
@@ -87,9 +90,9 @@ public class UserController {
 	public ResponseEntity<UserDTO> delete(@PathVariable Long id) {
 		service.delete(id);
 
-		return ResponseEntity.noContent().build();
 		// vai retornar 204 que é que deu certo e o corpo da
 		// resposta está vazio.
+		return ResponseEntity.noContent().build();
 	}
 
 }

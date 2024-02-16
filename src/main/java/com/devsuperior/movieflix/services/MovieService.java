@@ -106,12 +106,16 @@ public class MovieService{
 	// Único sem Transactional, pois tem que capturar uma exceção e o transactional
 	// não deixaria
 	public void delete(Long id) {
+		String message = "";
 		try {
 			repository.deleteById(id);
 		} catch (EmptyResultDataAccessException e) {
-			throw new ResourceNotFoundException("Id not found: " + id);
+			message = "Id not found: " + id;
+			logger.error(message);
+			throw new ResourceNotFoundException(message);
 		} catch (DataIntegrityViolationException e) {
-			throw new DatabaseException("Integrity Violation!");
+			message = "Integrity database Violation!";
+			throw new DatabaseException(message);
 		}
 
 	}

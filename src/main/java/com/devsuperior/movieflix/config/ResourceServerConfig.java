@@ -37,7 +37,16 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
 	
 	private static final String[] ONLY_ADMIN_PERMISSION = {"/roles/**,/genres/**"};//APENAS MEMBER
 	
-	//private static final String[] ADMIN = {"/users/**"};//APENAS SE JÁ TIVESSE CRUD PARA USER
+	private static final String[] SWAGGER_WHITELIST = {
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/webjars/**"
+    };
 
 	//Configura o tokenstore
 	@Override
@@ -55,6 +64,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
 		
 		http.authorizeRequests()
 		.antMatchers(PUBLIC).permitAll()
+		.antMatchers(SWAGGER_WHITELIST).permitAll()
 		.antMatchers(HttpMethod.GET, MOVIES_AND_REVIEWS_PERMISSION).hasAnyRole("VISITOR", "MEMBER")			
 		.antMatchers(MOVIES_AND_REVIEWS_PERMISSION).hasRole("MEMBER")	
 		.antMatchers(ONLY_ADMIN_PERMISSION).hasRole("MEMBER")

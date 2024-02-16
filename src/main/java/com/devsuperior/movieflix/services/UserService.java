@@ -1,10 +1,6 @@
 package com.devsuperior.movieflix.services;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.persistence.EntityNotFoundException;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,18 +17,18 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.devsuperior.movieflix.controller.exceptions.FieldMessage;
 import com.devsuperior.movieflix.dto.UserDTO;
 import com.devsuperior.movieflix.dto.UserInsertDTO;
+import com.devsuperior.movieflix.dto.UserUpdateDTO;
 import com.devsuperior.movieflix.entities.User;
 import com.devsuperior.movieflix.repositories.RoleRepository;
 import com.devsuperior.movieflix.repositories.UserRepository;
 import com.devsuperior.movieflix.services.exceptions.DatabaseException;
 import com.devsuperior.movieflix.services.exceptions.MyUsernameNotFoundException;
 import com.devsuperior.movieflix.services.exceptions.ResourceNotFoundException;
-
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -98,15 +94,20 @@ public class UserService implements UserDetailsService{
 
 		return retorno;
 	}
-
-	//public UserDTO update(Long id, UserUpdateDTO dto) {
+	
 	@Transactional
-	public UserDTO update(Long id, UserDTO dto) {
+	public UserDTO update(Long id, UserUpdateDTO dto) {
 		try {
 			User entity = repository.getOne(id);
-			copyDtoToEntity(dto, entity);
-			entity = repository.save(entity);
-			return new UserDTO(entity);
+			
+			if(validaUpdateUser(dto, id)) {
+				copyDtoToEntity(dto, entity);
+				entity = repository.save(entity);				
+			}
+			UserDTO retornoUserDTO = new UserDTO(entity);
+			retornoUserDTO.errorList = dto.errorList;
+			
+			return retornoUserDTO;
 
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Id not found: " + id);
@@ -141,9 +142,8 @@ public class UserService implements UserDetailsService{
 		});
 	}
 	
-	
-	public boolean validaInsertUser(UserInsertDTO dtoRequest) {
-		//List<FieldMessage> list = new ArrayList<>();
+	//Verifica se o email fornecido já existe antes de inserir
+	public boolean validaInsertUser(UserInsertDTO dtoRequest) {		
 		
 		// Coloque aqui seus testes de validação, acrescentando objetos FieldMessage à lista
 		User user = repository.findByEmail(dtoRequest.getEmail());
@@ -154,6 +154,20 @@ public class UserService implements UserDetailsService{
 		
 		return true;
 	}
+	
+	public boolean validaUpdateUser(UserUpdateDTO dtoRequest, Long userId) {		
+		
+		// Coloque aqui seus testes de validação, acrescentando objetos FieldMessage à lista
+		User user = repository.findByEmail(dtoRequest.getEmail());
+		if(user != null && userId != user.getId()) {			
+			dtoRequest.errorList.add(new FieldMessage("email", "Este email pertence a outro usuário"));
+			return false;
+		}
+		
+		return true;
+	}
+	
+	
 	
 
 }

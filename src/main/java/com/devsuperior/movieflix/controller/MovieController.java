@@ -37,7 +37,7 @@ public class MovieController {
 			Pageable pageable, 
 			@RequestParam(value = "genreId", defaultValue = "0") Long genreId) {
 		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id"));
-		//Page<MovieDTO> list = service.findAll(pageRequest);
+		
 		Page<MovieDTO> list = service.findAllPaged(genreId, pageRequest);	
 		
 		return ResponseEntity.ok().body(list);
