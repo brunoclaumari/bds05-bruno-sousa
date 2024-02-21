@@ -9,8 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +23,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.devsuperior.movieflix.dto.UserDTO;
 import com.devsuperior.movieflix.dto.UserInsertDTO;
 import com.devsuperior.movieflix.dto.UserUpdateDTO;
+import com.devsuperior.movieflix.entities.User;
+import com.devsuperior.movieflix.services.AuthService;
 import com.devsuperior.movieflix.services.UserService;
 
 @RestController
@@ -34,6 +34,9 @@ public class UserController {
 	@Autowired
 	private UserService service;
 
+	@Autowired
+	private AuthService authService;
+	
 	@GetMapping
 	public ResponseEntity<Page<UserDTO>> findAll(@RequestParam(value = "page", defaultValue = "0") Integer page,
 			@RequestParam(value = "linesPerPage", defaultValue = "12") Integer linesPerPage,
@@ -49,13 +52,21 @@ public class UserController {
 		return ResponseEntity.ok().body(list);
 	}
 	
+	@GetMapping(value = "/{id}")
+	public ResponseEntity<UserDTO> findById(@PathVariable Long id){		
+		
+		UserDTO user = service.findById(id);		
+		
+		return ResponseEntity.ok().body(user);
+	}
+	
 	@GetMapping(value = "/profile")
 	public ResponseEntity<UserDTO> getLoggedUser(){
 		
-		UserDTO dtoReturn = new UserDTO();
-		dtoReturn = service.getLoggedUser();
-		if(dtoReturn != null) {
-			return ResponseEntity.ok().body(dtoReturn);
+		User user = new User();
+		user = authService.authenticated();
+		if(user != null) {
+			return ResponseEntity.ok().body(new UserDTO(user));
 		}		
 		
 		return ResponseEntity.notFound().build();

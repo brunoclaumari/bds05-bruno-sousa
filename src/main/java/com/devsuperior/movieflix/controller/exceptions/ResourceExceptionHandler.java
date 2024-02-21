@@ -10,9 +10,12 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException.Forbidden;
 
+import com.devsuperior.movieflix.services.exceptions.ForbiddenException;
 import com.devsuperior.movieflix.services.exceptions.MyUsernameNotFoundException;
 import com.devsuperior.movieflix.services.exceptions.ResourceNotFoundException;
+import com.devsuperior.movieflix.services.exceptions.UnauthorizedException;
 
 @ControllerAdvice
 public class ResourceExceptionHandler {
@@ -77,6 +80,24 @@ public class ResourceExceptionHandler {
 		err.setPath(request.getRequestURI());
 		
 		return ResponseEntity.status(status).body(err);
-	}	
+	}
+	
+	@ExceptionHandler(ForbiddenException.class)
+	public ResponseEntity<OAuthCustomError> forbidden(ForbiddenException e, HttpServletRequest request){
+		HttpStatus status=HttpStatus.FORBIDDEN;//403
+		
+		OAuthCustomError err = new OAuthCustomError("Forbidden",e.getMessage());
+		
+		return ResponseEntity.status(status).body(err);
+	}
+	
+	@ExceptionHandler(UnauthorizedException.class)
+	public ResponseEntity<OAuthCustomError> forbidden(UnauthorizedException e, HttpServletRequest request){
+		HttpStatus status=HttpStatus.UNAUTHORIZED;//401
+		
+		OAuthCustomError err = new OAuthCustomError("Unauthorized",e.getMessage());
+		
+		return ResponseEntity.status(status).body(err);
+	}
 	
 }

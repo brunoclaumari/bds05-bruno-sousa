@@ -1,5 +1,7 @@
 package com.devsuperior.movieflix.services;
 
+import java.util.Optional;
+
 import javax.persistence.EntityNotFoundException;
 
 import org.slf4j.Logger;
@@ -44,6 +46,9 @@ public class UserService implements UserDetailsService{
 	
 	@Autowired
 	private RoleRepository roleRepository;
+	
+	@Autowired
+	private AuthService authService;
 
 
 	@Override
@@ -78,7 +83,17 @@ public class UserService implements UserDetailsService{
 		return list.map(x -> new UserDTO(x));
 	}
 	
-	//public UserDTO insert(UserInsertDTO dto) {
+	@Transactional(readOnly = true)
+	public UserDTO findById(Long id) {
+		
+		authService.validateSelfOrMember(id);		
+		Optional<User> userObj = repository.findById(id);
+		User entity = userObj.orElseThrow(()-> new ResourceNotFoundException("User not found"));
+		
+		return new UserDTO(entity);
+	}
+	
+	
 	@Transactional
 	public UserDTO insert(UserInsertDTO dto) {		
 		

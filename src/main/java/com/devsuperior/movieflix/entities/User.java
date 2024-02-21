@@ -170,8 +170,16 @@ public class User implements  UserDetails, Serializable{
 	}
 	
 	
-	
-	
+	public boolean hasRole(String roleName) {
+		/*
+		 userLogged.getRoles().stream()
+				.filter(x->x.getAuthority().equals("ROLE_MEMBER"))
+				.collect(Collectors.toList())
+		 * */
+		return this.roles.stream()
+				.filter(x->x.getAuthority().equals(roleName))
+				.collect(Collectors.toList()).size() > 0;
+	}
 	
 	
 	
